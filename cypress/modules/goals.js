@@ -1,6 +1,6 @@
 const  { faker }  =  require ( '@faker-js/faker' ) ;
 
-const teamId = 90141340188;
+const teamId = 90121846530;
 
 export function createGoal(){
      return cy.sendRequest('POST', `/team/${teamId}/goal`, {"name": faker.person.firstName() })
