@@ -1,43 +1,31 @@
 version: 2.1
 
 jobs:
-  node-job:
+  cypress-e2e-tests:
     docker:
-      - image: node-24.16.0-chrome-149.0.7827.102-1-ff-151.0.4-edge-149.0.4022.52-1
+      # Используем официальный, стабильный образ CircleCI с предустановленными браузерами (Chrome, Firefox)
+      - image: cimg/node:20.11.0-browsers
 
     steps:
+      # Скачиваем код из репозитория GitHub
       - checkout
 
-      - run:
-          name: Install dependencies
-          command: |
-              sudo apt-get update
-              sudo apt-get install -y unzip
-
+      # Устанавливаем зависимости проекта (Cypress и сопутствующие npm-пакеты)
       - run:
           name: Install npm packages
           command: npm ci
 
+      # Запускаем e2e тесты Cypress в режиме headless
       - run:
-          name: Install Allure
-          command: |
-              curl -sSL https://github.com/allure-framework/allure2/releases/download/2.19.0/allure-2.19.0.zip -o allure.zip
-              sudo unzip allure.zip -d /opt/allure
-              sudo ln -s /opt/allure/allure-2.19.0/bin/allure /usr/bin/allure
-
-      - run:
-          name: Run tests
+          name: Run Cypress tests
           command: npx cypress run
 
-      - run:
-          name: Generate report
-          command: npm run allure:report
-
+      # Сохраняем сгенерированный HTML-отчет в артефакты CircleCI
       - store_artifacts:
-          path: allure-report
-          destination: CypressReport
+          path: cypress/reports/html
+          destination: Cypress-HTML-Report
 
 workflows:
   build-and-test:
     jobs:
-      - node-job
+      - cypress-e2e-tests
