@@ -11,8 +11,8 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo apt-get update
-            sudo apt-get install -y unzip
+              sudo apt-get update
+              sudo apt-get install -y unzip
 
       - run:
           name: Install npm packages
@@ -21,9 +21,9 @@ jobs:
       - run:
           name: Install Allure
           command: |
-            curl -sSL https://github.com/allure-framework/allure2/releases/download/2.19.0/allure-2.19.0.zip -o allure.zip
-            sudo unzip allure.zip -d /opt/allure
-            sudo ln -s /opt/allure/allure-2.19.0/bin/allure /usr/bin/allure
+              curl -sSL https://github.com/allure-framework/allure2/releases/download/2.19.0/allure-2.19.0.zip -o allure.zip
+              sudo unzip allure.zip -d /opt/allure
+              sudo ln -s /opt/allure/allure-2.19.0/bin/allure /usr/bin/allure
 
       - run:
           name: Run tests
