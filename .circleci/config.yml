@@ -1,31 +1,43 @@
 version: 2.1
 
 jobs:
-  python-job:
-    docker:
-      - image: circleci/python:3.10.1-node-browsers
-    steps:
-      - checkout
-      - run:
-          name: set up venv
-          command: |
-            python -m venv venv
-            . venv/bin/activate
-      - run:
-          name: install dependencies
-          command: |
-            . venv/bin/activate
-            pip install -r requirements.txt
-      - run:
-          name: run tests
-          command: |
-            . venv/bin/activate
-            pytest --template=html1/index.html --report=report.html
-      - store_artifacts:
-          path: report.html
-          destination: python-report
+node-job:
+docker:
+- image: node-24.16.0-chrome-149.0.7827.102-1-ff-151.0.4-edge-149.0.4022.52-1
+
+steps:
+- checkout
+
+- run:
+name: Install dependencies
+command: |
+apt-get update
+apt-get install -y unzip
+
+- run:
+name: Install npm packages
+command: npm ci
+
+- run:
+name: Install Allure
+command: |
+curl -sSL https://github.com/allure-framework/allure2/releases/download/2.19.0/allure-2.19.0.zip -o allure.zip
+unzip allure.zip -d /opt/allure
+ln -s /opt/allure/allure-2.19.0/bin/allure /usr/bin/allure
+
+- run:
+name: Run tests
+command: npx cypress run
+
+- run:
+name: Generate report
+command: npm run allure:report
+
+- store_artifacts:
+path: allure-report
+destination: CypressReport
 
 workflows:
-  build-and-test:
-    jobs:
-      - python-job
+build-and-test:
+jobs:
+- node-job
